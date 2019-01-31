@@ -1,0 +1,66 @@
+.example-form {
+  width: 100%;
+  color: black;
+}
+
+
+.example-full-width {
+  width: 100%;
+}
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+.refresh{
+  margin-left: 5px;
+  color: #003882;
+}
+
+.icono-eliminar{
+  float: right;
+  font-weight: normal;
+  opacity:.5;
+  margin-right: .35rem;
+}
+.icono-eliminar:active, .icono-eliminar:hover{
+  opacity:1;
+}
+
+.mat-expansion-panel, .nota-lista {
+  margin: .5rem ;
+}
+
+.centro {
+
+}
+.example-icon {
+  padding:0px;
+}
+.mat-tab{
+  background: #eeeeee;
+}
+
+.button{
+  border: none ;
+}
+.sombreada{
+  font-weight: bold;
+  color: #2831b5;
+  margin-left: 5px;
+
+}
+.sombreada2{
+  font-weight: bold;
+  color: #2831b5;
+}
+h2.mat-subheader{
+  font-weight: bold;
+  font-size: 16px;
+}
+.example-card{
+  margin: 10px;
+}
+
+.leftBorde{
+  border-left: 6px solid red;
+}

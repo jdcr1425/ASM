@@ -1,0 +1,139 @@
+<mat-toolbar class="toolbarresumen">
+  <div *ngIf="data.accion!=4;"><h3 mat-dialog-title>Solicitud de salida #{{data.id_salida}}</h3></div>
+  <div *ngIf="data.accion==4;"><h3 mat-dialog-title>Información del material #{{data.id_material}}</h3></div>
+  <span class="toolbar-spacer"></span>
+  <mat-icon class="material-icons"(click)="onNoClick()">cancel</mat-icon>
+</mat-toolbar>
+
+<div mat-dialog-content>
+
+  <mat-tab-group>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="example-tab-icon material-icons">perm_identity</mat-icon>
+        <span style="font-size: small">Firma</span>
+      </ng-template>
+      <div *ngIf="data.accion==1;else resumen">
+        <div *ngIf="estado != '1' ;else auto">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>Autorización</mat-card-title>
+              <mat-card-subtitle>Con esto usted estará autorizando la salida de estos materiales</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <mat-checkbox [disabled]="autorizado" [(ngModel)]="disabled">Autorizo esta salida</mat-checkbox>
+
+            </mat-card-content>
+            <mat-card-actions>
+              <button mat-raised-button color="primary" type="submit" [disabled]="!disabled || autorizado" (click)="addAuto()">Confirmar</button>
+              <div *ngIf="loading1" style="margin-top:10px; "><mat-spinner diameter=20 mode="indeterminate"></mat-spinner></div>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+        <ng-template #auto>
+          <span style="font-size: 15px;font-weight: 500;  margin-top: 5px"> Ya autorizaste esta salida de materiales.</span>
+        </ng-template>
+      </div>
+      <ng-template #resumen>
+        <div class='resumen' [style.background-color]="getStyle(auth.estado)" *ngFor="let auth of autorizaciones">
+
+          <mat-card-header>
+            <mat-card-title>{{auth.nombres_apellidos}}</mat-card-title>
+            <mat-card-subtitle>{{auth.cargo}}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+
+            <span style="font-size: 15px;font-weight: 500; margin-right: 3px">Estado : </span> <span style="font-size: 15px;font-weight: 400;">{{auth.estado
+              | estado}}</span><br>
+
+            <div *ngIf="auth.estado == 1"><span style="font-size: 15px;font-weight: 500;  margin-right: 3px">Fecha de
+                la autorización :</span> <span style="font-size: 15px;font-weight: 400;">{{auth.updated_at}}</span></div>
+
+          </mat-card-content>
+
+        </div>
+
+        <div *ngIf="data.accion==3" >
+          <div *ngIf="!identificacion_supervisor;else no">
+         <!-- <div style="max-width: 100px;">-->
+            <form [formGroup]="checkform">
+            <mat-checkbox  formControlName="check" [disabled]="deshabilitarConfirmar" >
+              <p style="font-size: 13px;font-weight: 500;margin-top: 10px;line-height: 1;margin-bottom: 5px">Ya revisé que la salida esta
+                autorizada<br> y que los
+                elementos relacionados <br>coinciden.</p>
+            </mat-checkbox>
+
+            <button mat-raised-button color="primary" [disabled]="deshabilitarConfirmar" (click)="confirmar_control_acceso()">Confirmar salida</button>
+              <div *ngIf="loading2" style="margin-top:10px; "><mat-spinner diameter=20 mode="indeterminate"></mat-spinner></div>
+
+            </form>
+          </div>
+        <!--</div>-->
+          <ng-template #no>
+            <p style="font-size: 15px;font-weight: 400;margin-right:10px;"><span style="font-weight: bold">{{data.nombresapellidos_supervisor }}</span> ya autorizó la salida de estos materiales el <br> <span style="font-weight: bold;font-size: 14px">{{hora_salida[0]}}</span> a las <span style="font-weight: bold;font-size: 14px">{{hora_salida[1]}}</span></p>
+          </ng-template>
+        </div>
+
+        <div *ngIf="data.accion == 4">
+          <form [formGroup]="checkform">
+            <mat-checkbox  formControlName="check" [disabled]="deshabilitarConfirmar" >
+              <p style="font-size: 13px;font-weight: 500;margin-top: 10px;line-height: 1;margin-bottom: 5px">Al autorizar esto estoy confirmando<br> el retorno del material en pantalla.</p>
+            </mat-checkbox>
+
+            <button mat-raised-button color="primary" [disabled]="deshabilitarConfirmar" (click)="confirmar_control_acceso()">Confirmar salida</button>
+            <div *ngIf="loading2" style="margin-top:10px; "><mat-spinner diameter=20 mode="indeterminate"></mat-spinner></div>
+
+          </form>
+
+        </div>
+
+      </ng-template>
+
+    </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="example-tab-icon material-icons">list</mat-icon>
+        <span style="font-size: small">{{nombre_tab2}}</span>
+      </ng-template>
+
+
+
+      <!--  <mat-card class="example-card" *ngFor="let mat of datos;last as last">
+        <mat-card-header>
+          &lt;!&ndash;<div mat-card-avatar class="example-header-image"></div>&ndash;&gt;
+          <mat-card-title>{{mat['nombre_material']}}u</mat-card-title>
+          <mat-card-subtitle>Cant. {{mat['cantidad']}}</mat-card-subtitle>
+        </mat-card-header>
+       &lt;!&ndash; <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">&ndash;&gt;
+        <mat-card-content>
+          <p>
+            {{mat['descripcion']}}
+          </p>
+          <p>
+            <small *ngIf="mat.regresa=='1'">Fecha de regreso : {{mat['fecha_regreso']}} </small>
+          </p>
+        </mat-card-content>
+      &lt;!&ndash;  <mat-card-actions>
+          <button mat-button>LIKE</button>
+          <button mat-button>SHARE</button>
+        </mat-card-actions>&ndash;&gt;
+      </mat-card>-->
+      <mat-list>
+        <mat-list-item style="margin-top: 10px" *ngFor="let mat of datos;last as last">
+          <small mat-line style="font-weight: bold">{{mat['nombre_material']}} </small>
+          <small mat-line><span style="font-size: small;color: gray;font-weight: bold">Cantidad :</span>
+            {{mat['cantidad']}} </small>
+          <small mat-line><span style="font-size: small;color: gray;font-weight: bold">Descripción : </span>{{mat['descripcion']}}
+          </small>
+          <small mat-line *ngIf="mat.regresa=='1';else sinfecha"><span style="font-size: small;color: gray;font-weight: bold">Fecha
+              de regreso : </span> {{mat['fecha_regreso']}} </small>
+          <ng-template #sinfecha><span style="font-size: small;color: gray;font-weight: bold">No debe regresar. </span>
+          </ng-template>
+          <img mat-line *ngIf="mat.avatar.length > 15" [src]="mat.avatar" width="100%" height="100%" alt="Foto material"/>
+          <mat-divider [inset]="true" *ngIf="!last"></mat-divider>
+        </mat-list-item>
+      </mat-list>
+    </mat-tab>
+  </mat-tab-group>
+
+</div>

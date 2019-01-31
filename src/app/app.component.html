@@ -1,0 +1,428 @@
+<!-- En este bloque se trata sobre el toolbar-->
+<mat-toolbar color="primary" role="heading">
+  <mat-toolbar-row>
+    <span>ASM</span>
+    <mat-icon class="refresh material-icons" *ngIf="loggedIn" (click)="cargartodo(usr.cargo)">refresh</mat-icon>
+
+    <span class="example-spacer"></span>
+    <p *ngIf="!loggedIn" style="font-size: small;margin-right: 10px">{{hora_actual}}</p>
+    <img *ngIf="!loggedIn" src="assets/icons/logo_cotecmar.svg" width="40" height="40" />
+    <!--<mat-icon class="example-icon">verified_user</mat-icon>-->
+    <span style="float: left" *ngIf="loggedIn">
+      <small>{{ nombre_prueba }}</small>
+    </span>
+    <!--nuevo-->
+    <button class="button" mat-icon-button [matMenuTriggerFor]="menu" *ngIf="loggedIn">
+      <mat-icon class="material-icons">more_vert</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button class="button" mat-menu-item (click)="versolicitudes()">
+        <mat-icon (click)="versolicitudes()" class="example-icon material-icons">view_list</mat-icon>
+        <span>Ver solicitudes</span>
+      </button>
+      <button class="button" *ngIf="usr.cargo != 3 " mat-menu-item (click)="nuevasolicitud()">
+        <mat-icon (click)="mostrartabs=true;mostrarsol=false;nuevasolicitud()" class="example-icon material-icons">add_circle_outline</mat-icon>
+        <span>Nueva solicitud</span>
+      </button>
+      <button class="button" *ngIf="usr.cargo == 3 " mat-menu-item (click)="get_retornos();ver_retornos()">
+        <mat-icon (click)="mostrartabs=false;mostrarsol=false;get_retornos();ver_retornos()" class="example-icon material-icons">reply</mat-icon>
+        <span>Retornos</span>
+      </button>
+      <button class="button" mat-menu-item *ngIf="usr.cargo == 0" (click)="addUsuario()">
+        <mat-icon (click)="addUsuario()" class="example-icon material-icons">create</mat-icon>
+        <span>Crear usuario</span>
+      </button>
+      <button class="button" mat-menu-item *ngIf="usr.cargo != 3 " (click)="historial()">
+        <mat-icon (click)="historial()" class="example-icon material-icons">history</mat-icon>
+        <span>Historial de solicitudes</span>
+      </button>
+
+      <button class="button" mat-menu-item (click)="logout()">
+        <mat-icon (click)="logout()" class="example-icon material-icons">exit_to_app</mat-icon>
+        <span>Salir</span>
+      </button>
+    </mat-menu>
+    <!--hasta aqui-->
+  </mat-toolbar-row>
+</mat-toolbar>
+
+<!-- Bloque sobre el inicio de sesión -->
+<div class="centro" style="text-align:center;" *ngIf="!loggedIn">
+  <section class="mat-typography">
+    <br>
+    <h1>Bienvenido a ASM</h1>
+    <small style="color:grey;opacity:.75;">Debes iniciar sesión para continuar.</small>
+    <br />
+  </section>
+
+  <div>
+    <mat-card class="example-card">
+      <mat-card-content>
+        <form class="example-form" [formGroup]="loginForm" (ngSubmit)="login()">
+          <table class="example-full-width" cellspacing="0">
+            <tr>
+              <td>
+
+                <mat-form-field class="example-full-width">
+                  <input matInput placeholder="E-mail" formControlName="email" required autocomplete="username email">
+
+                </mat-form-field>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <mat-form-field class="example-full-width">
+                  <input matInput placeholder="Contraseña" formControlName="pass" [type]="hide ? 'password' : 'text'"
+                    required autocomplete="current-password">
+                  <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </mat-form-field>
+              </td>
+
+
+            </tr>
+
+            <div *ngIf="error && (loginForm.get('pass').status==='INVALID' || loginForm.get('email').status==='INVALID') "
+              class="alert alert-danger" role="alert">
+              ¡Verificar datos!
+            </div>
+          </table>
+
+          <br/>
+          <br/>
+          <button [disabled]="!loginForm.valid" type="submit" mat-raised-button color="primary">Iniciar sesión</button>
+        </form>
+      </mat-card-content>
+
+    </mat-card>
+
+  </div>
+
+  <!--  <button mat-raised-button
+        style = "margin-top: 1rem;width:50vw;max-width:25rem;min-width:15rem;"
+        color="accent"
+        (click)="login()"
+>Iniciar sesión</button><br/>-->
+  <!--<button mat-raised-button
+        style = "margin-top: 1rem;width:50vw;max-width:25rem;min-width:15rem;"
+        color="accent"
+        (click)="login()"
+>Registrar usuario</button>-->
+</div>
+
+<div *ngIf="loggedIn">
+
+  <div *ngIf="mostrarsol">
+    <mat-card>
+      <mat-card-title *ngIf="usr.cargo != 3" style="text-align: center">Autorizaciones pendientes</mat-card-title>
+      <mat-card-title *ngIf="usr.cargo==3" style="text-align: center">Salidas</mat-card-title>
+    </mat-card>
+    <mat-list>
+      <div *ngIf="usr.cargo==2">
+        <div *ngIf="usr.cargo==2;else elseBlock">
+          <h2 mat-subheader>Solicitudes que debo autorizar</h2>
+          <ng-container *ngIf="llegadas.length>0 && usr.cargo==2;else bloque0llegadas">
+
+            <mat-list-item *ngFor="let auto of llegadas" (click)="mostrar(auto.id,1, auto.identificacion_supervisor, auto.nombresapellidos_supervisor,auto.fecha_salida)">
+              <mat-icon class="material-icons" mat-list-icon>check</mat-icon>
+              <h4 mat-line><span class="sombreada2">Id : </span> {{auto.id}}</h4>
+              <p mat-line> <span class="sombreada2">Descripción : </span> {{auto.descripcion}} </p>
+              <p mat-line> <span class="sombreada2">Autorizada a  : </span> {{mostrarNombre(auto.idusuario)}} </p>
+              <p mat-line> <span class="sombreada2">Motivo : </span> {{auto.motivo_prestamo}} </p>
+              <p mat-line> <span class="sombreada2">Fecha de solicitud : </span> {{auto.fecha_solicitud}} </p>
+              <p mat-line> <span class="sombreada2">Proyecto : </span> {{auto.proyecto}} </p>
+              <p mat-line> <span class="sombreada2">Pertinencia : </span> {{auto.gerencia}} </p>
+              <p mat-line> <span class="sombreada2">Estado : </span> {{auto.estado | estado}} </p>
+            </mat-list-item>
+
+          </ng-container>
+          <ng-template #bloque0llegadas>
+            <small style="color:grey;opacity:.75;" mat-subheader>No tienes solicitudes para autorizar.</small>
+
+          </ng-template>
+        </div>
+        <ng-template #elseBlock *ngIf="usr.cargo==2"><small style="color:grey;opacity:.75;" mat-subheader>No tienes
+            solicitudes que debes autorizar.</small></ng-template>
+        <mat-divider></mat-divider>
+      </div>
+      <div *ngIf="usr.cargo != 3">
+        <h2 mat-subheader>Mis solicitudes aguardando ser autorizadas</h2>
+
+        <ng-container *ngIf="salidasFiltradas.length>0 && usr.cargo==2;else bloque0salidas">
+          <div *ngIf="usr.cargo != 3">
+            <mat-list-item style="margin-top:10px;" [style.border-left]="getStyle(sal.estado)" *ngFor="let sal of salidasFiltradas"
+              (click)="mostrar(sal.id,2, sal.identificacion_supervisor, sal.nombresapellidos_supervisor,sal.fecha_salida)">
+              <mat-icon mat-list-icon class="material-icons">hourglass_full</mat-icon>
+              <h4 mat-line><span class="sombreada2">Id : </span> {{sal.id}}</h4>
+              <p mat-line> <span class="sombreada2">Descripción : </span> {{sal.descripcion}} </p>
+              <p mat-line> <span class="sombreada2">Motivo : </span> {{sal.motivo_prestamo}} </p>
+              <p mat-line> <span class="sombreada2">Fecha de solicitud : </span> {{sal.fecha_solicitud}} </p>
+              <p mat-line> <span class="sombreada2">Proyecto : </span> {{sal.proyecto}} </p>
+              <p mat-line> <span class="sombreada2">Pertinencia : </span> {{sal.gerencia}} </p>
+              <p mat-line> <span class="sombreada2">Estado : </span> {{sal.estado | estado}} </p>
+
+            </mat-list-item>
+          </div>
+        </ng-container>
+        <ng-template #bloque0salidas>
+
+          <small style="color:grey;opacity:.75;" mat-subheader>No tienes solicitudes hechas. <span class="sombreada"
+              (click)="mostrartabs=true;mostrarsol=false">Crea una.</span></small>
+
+        </ng-template>
+      </div>
+      <div *ngIf="usr.cargo == 3">
+
+
+      <div *ngIf="mostrar_salidas_control">
+       <mat-toolbar class="toolbarbuscar">
+            <input matInput placeholder="Buscar" [(ngModel)]="searchText">
+            <i class="material-icons">
+              search
+              </i>
+           
+          </mat-toolbar>
+
+
+        <mat-list-item style="margin-top:10px;" [style.border-left]="getStyle(sal.estado)" *ngFor="let sal of salidas_totales | search : searchText"
+          (click)="mostrar(sal.id, 3,sal.identificacion_supervisor, sal.nombresapellidos_supervisor,sal.fecha_salida)">
+          <mat-icon mat-list-icon>hourglass_full</mat-icon>
+          <h4 mat-line><span class="sombreada2">Id : </span> {{sal.id}}</h4>
+          <p mat-line> <span class="sombreada2">Autorizada a  : </span> {{mostrarNombre(sal.idusuario)}} </p>
+          <p mat-line> <span class="sombreada2">Descripción : </span> {{sal.descripcion}} </p>
+          <p mat-line> <span class="sombreada2">Motivo : </span> {{sal.motivo_prestamo}} </p>
+          <p mat-line> <span class="sombreada2">Fecha de solicitud : </span> {{sal.fecha_solicitud}} </p>
+          <p mat-line> <span class="sombreada2">Proyecto : </span> {{sal.proyecto}} </p>
+          <p mat-line> <span class="sombreada2">Pertinencia : </span> {{sal.gerencia}} </p>
+          <p mat-line> <span class="sombreada2">Estado : </span> {{sal.estado | estado}} </p>
+
+        </mat-list-item>
+      </div>
+
+        <div *ngIf="mostrar_retornos">
+
+          <mat-list-item style="margin-top:10px;" *ngFor="let mat of materiales_retorno | search : searchText"
+          (click)="mostrar(null, 4, null, null,null,mat[0].id)"
+          >
+            <mat-icon mat-list-icon>hourglass_full</mat-icon>
+            <h4 mat-line><span class="sombreada2">ID : </span> {{mat[0].id}}</h4>
+            <p mat-line> <span class="sombreada2"># de salida  : </span> {{mat[0].idsm_instalaciones}} </p>
+            <p mat-line> <span class="sombreada2">Nombre del material : </span> {{mat[0].nombre_material}} </p>
+            <p mat-line> <span class="sombreada2">Descripción : </span> {{mat[0].descripcion}} </p>
+            <p mat-line> <span class="sombreada2">Cantidad: </span> {{mat[0].cantidad}} </p>
+            <p mat-line> <span class="sombreada2">Fecha de regreso : </span> {{mat[0].fecha_regreso}} </p>
+
+          </mat-list-item>
+        </div>
+
+
+
+      </div>
+</mat-list>
+  </div>
+
+
+  <!--Aquí será para mostrar las solicitudes pendientes para autorizar -->
+  <!-- <div *ngIf="'solicitudesparaautorizar' && usr.cargo==0">
+  <small>No tienes solicitudes pendientes para autorizar</small>
+</div>
+
+<div *ngIf="mostrarsol">
+  <mat-list>
+    <mat-card>
+      <mat-card-title style="text-align: center">Autorizaciones pendientes</mat-card-title>
+
+    </mat-card>
+    <mat-card class="nota-lista" *ngFor="let sol of salidas" (click)="Seleccionarsolicitud(sol)">
+      <h4 matLine>
+        Solicitud # {{sol.id}}
+        <div class='icono-eliminar' (click)="eliminarNota(sol)">❌</div>
+      </h4>
+      <p matLine> Autorizada a {{sol.autorizadoa}} </p>
+      {{sol.id | date}}
+    </mat-card><br><br>
+    <div  style="text-align:center;">
+    <small *ngIf="salidas.length==0"
+      style="color:grey;opacity:.75;font-family:sans-serif;"
+    >No tienes autorizaciones pendientes</small>
+    </div>
+  </mat-list>
+</div>
+-->
+
+  <div *ngIf="mostrartabs">
+    <section class="mat-typography">
+      <h1 style="text-align: center;margin-top: 5px;">
+        Registrar salida
+      </h1>
+    </section>
+    <mat-tab-group [selectedIndex]="selectedIndex" mat-stretch-tabs class="example-stretched-tabs mat-elevation-z4">
+      <mat-tab label="datos" [disabled]='deshabilitarTabDatos'>
+        <ng-template mat-tab-label>
+          <mat-icon class="example-tab-icon material-icons">assignment</mat-icon>
+          Datos
+        </ng-template>
+        <BR>
+        <form [formGroup]="createForm" (ngSubmit)="guardarRequerimiento()">
+          <mat-expansion-panel [expanded]="expandir1" [disabled]="desabilitaraddsalida">
+
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Datos del solicitante.
+              </mat-panel-title>
+              <mat-panel-description>
+                Digite datos del proyecto y solicitante.
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+            <mat-form-field>
+              <input cdkFocusInitial matInput placeholder="Proyecto del solicitante" formControlName="proyecto">
+            </mat-form-field>
+            <!--
+          <mat-form-field>
+            <input matInput placeholder="Identificación" formControlName="ID" >
+          </mat-form-field>-->
+            <mat-form-field>
+              <mat-select placeholder="Pertenencia del material" name="motivo" formControlName="pertinencia">
+                <mat-option *ngFor="let Pertinencia of pertinencia" [value]="Pertinencia.value">
+                  {{Pertinencia.viewValue}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-select placeholder="Motivo de la salida" name="motivo" formControlName="motivo">
+                <mat-option *ngFor="let motivos of motivo" [value]="motivos.value">
+                  {{motivos.viewValue}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field class="example-full-width">
+              <textarea matInput placeholder="Descripción" formControlName="descripcion"></textarea>
+            </mat-form-field>
+
+            <button mat-raised-button color="primary" [disabled]="!createForm.valid" type="submit">Guardar</button>
+            <div *ngIf="loading1" style="margin-top:10px; "><mat-spinner diameter=20 mode="indeterminate"></mat-spinner></div>
+            <!--selectTab(1);-->
+          </mat-expansion-panel>
+        </form>
+
+        <form [formGroup]="materialesForm" enctype='multipart/form-data'>
+          <mat-expansion-panel [expanded]="expandir2" [disabled]="deshabilitaraddmateriales">
+
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Datos del Material.
+              </mat-panel-title>
+              <mat-panel-description>
+                Agregar los materiales que saldrán de la corporación.
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <mat-form-field>
+              <input cdkFocusInitial matInput placeholder="Nombre" formControlName="nombre" required>
+            </mat-form-field>
+            <mat-form-field>
+              <textarea matInput placeholder="Descripción" formControlName="descripción" required></textarea>
+            </mat-form-field>
+            <mat-form-field>
+              <input type="number" matInput placeholder="Cantidad" formControlName="cantidad" required>
+            </mat-form-field>
+
+           <!-- <mat-form-field>
+              <input matInput placeholder="Foto" formControlName="foto">
+            </mat-form-field>-->
+            <div class="form-group">
+            <h4>Tomar foto</h4>
+              <input accept="image/*"  type="file" capture (change)="detectFiles($event)" name="avatar"/>
+            </div>
+            <mat-form-field>
+              <mat-select placeholder="¿Debe Regresar?" required formControlName="debevolver" (selectionChange)="verificar()">
+                <mat-option *ngFor="let opcion of regresar" [value]="opcion.value">
+                  {{opcion.viewValue}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field>
+              <input matInput [matDatepickerFilter]="myFilter" [min]="minima" [max]="maxima" [matDatepicker]="picker" placeholder="Fecha de regreso"
+                formControlName="fecha" [required]="requerido" disabled>
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker ></mat-datepicker>
+            </mat-form-field>
+
+
+            <button mat-raised-button color="primary" [disabled]="!materialesForm.valid && pasaraagregar" type="submit" (click)="agregarMateriales()">Agregar</button>
+
+            <button mat-stroked-button class="example-spacer" color="primary" (click)="irAutorizacion()">Ir a
+              autorizaciones</button>
+            <div *ngIf="loading2" style="margin-top:10px; "><mat-spinner diameter=20 mode="indeterminate"></mat-spinner></div>
+          </mat-expansion-panel>
+        </form>
+
+
+      </mat-tab>
+
+
+      <mat-tab label="Autorizacíones" [disabled]='deshabilitarTabAUtorizacion'>
+        <ng-template mat-tab-label>
+          <mat-icon class="example-tab-icon">assignment_turned_in</mat-icon>
+          Autorizacíones
+        </ng-template>
+
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>
+              <h3>Agregar autorizantes</h3>
+            </mat-card-title>
+            <mat-card-subtitle><small style="color:grey;opacity:.75;">Debes agregar las personas que deben autorizar
+                esta salida.</small></mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+
+
+            <form (ngSubmit)="addAutho()" [formGroup]="autorizadoresForm">
+              <mat-form-field>
+                <mat-select placeholder="Jefe del Departamento y/o Gerencia" [(value)]="NameAuth" required
+                  formControlName="jefe">
+                  <mat-option *ngFor="let auto of autorizadoresMostrarEnSelect" [value]="auto">
+                    {{ auto }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="autorizadoresForm.get('jefe').hasError('required')">
+                  ¡Debe escoger su jefe de departamento!
+                </mat-error>
+              </mat-form-field>
+
+
+              <p>
+                <mat-checkbox [formControl]="disableSelect" required>No aplica gerente de proyecto</mat-checkbox>
+              </p>
+              <mat-form-field>
+                <mat-select placeholder="Gerente del Proyecto" [(value)]="NameGer" [disabled]="disableSelect.value"
+                  formControlName="gerente" [required]="!disableSelect.value">
+                  <mat-option *ngFor="let ger of autorizadoresMostrarEnSelectGerente" [value]="ger">
+                    {{ ger }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="autorizadoresForm.get('gerente').hasError('required')">
+                  ¡Debe escoger el gerente de proyecto!
+                </mat-error>
+              </mat-form-field>
+
+              <button mat-raised-button color="primary" [disabled]="!autorizadoresForm.valid">Confirmar</button>
+
+
+            </form>
+
+
+          </mat-card-content>
+
+        </mat-card>
+
+      </mat-tab>
+
+    </mat-tab-group>
+
+  </div>
+</div>
+
+

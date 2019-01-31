@@ -1,0 +1,121 @@
+/* You can add global styles to this file, and also import other style files */
+
+
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+.mat-toolbar.mat-primary {
+  background: #738bc1 !important;
+  color: #fff !important;
+}
+
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://example.com/MaterialIcons-Regular.eot); /* For IE6-8 */
+  src: local('Material Icons'),
+  local('MaterialIcons-Regular'),
+  url(assets/iconfont/MaterialIcons-Regular.woff2) format('woff2'),
+  url(assets/iconfont/MaterialIcons-Regular.woff) format('woff'),
+  url(assets/iconfont/MaterialIcons-Regular.ttf) format('truetype');
+}
+
+
+
+@media only screen  and (max-device-width: 768px){
+  .mat-form-field{
+    width: 100%;
+  }
+}
+
+@media screen and (max-width:768px){
+  .mat-form-field {
+    width: 100%;
+  }
+}
+@media screen and (min-width:768px){
+  .mat-form-field:first-of-type{
+    margin-right: 2%;
+  }
+  .mat-form-field {
+    width: 49%;
+  }
+}
+
+body {
+  margin: 0;
+  background-color: #ffffff;
+}
+
+.toolbar{
+  background-color:rgb(63, 81, 181);
+  border-radius: 5px;
+  color: white;
+  margin-bottom: 10px;
+  max-height: 25px;
+
+}
+.toolbarbuscar{
+   background-color:rgb(255, 255, 255);
+   border-radius: 5px;
+   color: grey;
+   margin-bottom: 10px;
+   max-height: 35px;
+   border: 2px rgb(115, 139, 193) solid ;
+   margin-left: 6px;
+   max-width: 250px;
+}
+.toolbarresumen{
+   background-color:rgb(63, 81, 181);
+   border-radius: 5px;
+   color: white;
+   margin-bottom: 10px;
+   max-height: 35px;
+ }
+
+.toolbar-spacer{
+  flex: 1 1 auto;
+}
+
+
+.alert{
+  position: relative;
+  padding: .75rem 1.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid transparent;
+  border-radius: .25rem;
+  max-width: 100%;
+
+}
+.alert-danger{
+  color: #721c24;
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;  /* Preferred icon size */
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: 'liga';
+}
+
+
+

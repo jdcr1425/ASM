@@ -1,0 +1,46 @@
+<mat-toolbar class="toolbar">
+  <h1 mat-dialog-title>Creación de usuario</h1>
+  <span class="toolbar-spacer"></span>
+  <mat-icon (click)="onNoClick()" class="material-icons">cancel</mat-icon>
+</mat-toolbar>
+<div mat-dialog-content>
+  <form [formGroup]="_usrform">
+    <mat-form-field>
+      <input cdkFocusInitial matInput type="number" (keypress)="onlyNumberKey($event)" placeholder="Identificación" formControlName="ID" required>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput type="text" placeholder="Nombres" formControlName="nombre" required>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput type="text" placeholder="E-mail" formControlName="email" required>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-select placeholder="Cargo" formControlName="cargo" required>
+        <mat-option *ngFor="let cargo of cargos" [value]="cargo">
+          {{cargo}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-select placeholder="Tipo de usuario" formControlName="tipo" required>
+        <mat-option *ngFor="let tipo of tipo_usr" [value]="tipo.value">
+          {{tipo.viewValue}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput  placeholder="Contraseña" formControlName="contraseña" required [type]="hide ? 'password' : 'text'">
+      <mat-icon class="material-icons" matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput  placeholder="Confirmar contraseña" formControlName="contraseña_confirm" [type]="hide2 ? 'password' : 'text'" required>
+      <mat-icon class="material-icons" matSuffix (click)="hide2 = !hide2">{{hide2 ? 'visibility_off' : 'visibility'}}</mat-icon>
+    </mat-form-field>
+    <div *ngIf="error_pass " class="alert alert-danger" role="alert">
+      ¡Contraseñas deben ser iguales!
+    </div>
+
+    <button mat-button mat-raised-button button [disabled]="!_usrform.valid" color="primary" (click)="onSubmit()">Crear</button>
+    <div *ngIf="loading" style="margin-top:10px; "><mat-spinner diameter=20 mode="indeterminate"></mat-spinner></div>
+  </form>
+</div>

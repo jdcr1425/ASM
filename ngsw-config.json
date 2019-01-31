@@ -1,0 +1,40 @@
+{
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "ASM",
+      "installMode": "prefetch",
+      "resources": {
+        "files": [
+          "/favicon.ico",
+          "/index.html",
+          "/*.css",
+          "/*.js"
+        ]
+      }
+    }, {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/assets/**"
+        ]
+      }
+    }
+  ],
+  "dataGroups":[
+    {
+      "name":"fbAPI",
+      "urls":[
+        "https://asmprueba-51b20.firebaseio.com/**"
+      ],
+      "cacheConfig":{
+        "strategy":"freshness",
+        "maxAge":"1m",
+        "maxSize":100,
+        "timeout":"5s"
+      }
+    }
+  ]
+}
